@@ -1,0 +1,297 @@
+﻿{
+  "configurations": [
+    {
+      "name": "debug-1080",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "COMPRESS_LEVEL",
+          "value": "OFF",
+          "type": "STRING"
+        },
+        {
+          "name": "WINDOW",
+          "value": "True",
+          "type": "BOOL"
+        }
+      ]
+    },
+    {
+      "name": "uncompressed-1080",
+      "generator": "Ninja",
+      "configurationType": "MinSizeRel",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "COMPRESS_LEVEL",
+          "value": "OFF",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "light-1080",
+      "generator": "Ninja",
+      "configurationType": "MinSizeRel",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "COMPRESS_LEVEL",
+          "value": "LIGHT",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "heavy-1080",
+      "generator": "Ninja",
+      "configurationType": "MinSizeRel",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "COMPRESS_LEVEL",
+          "value": "HEAVY",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "debug-720",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "-DXRES=1280 -DYRES=720",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "COMPRESS_LEVEL",
+          "value": "OFF",
+          "type": "STRING"
+        },
+        {
+          "name": "OPENGL_DEBUG",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "WINDOW",
+          "value": "True",
+          "type": "BOOL"
+        }
+      ]
+    },
+    {
+      "name": "light-720",
+      "generator": "Ninja",
+      "configurationType": "MinSizeRel",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "-DXRES=1280 -DYRES=720",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "COMPRESS_LEVEL",
+          "value": "LIGHT",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "heavy-720",
+      "generator": "Ninja",
+      "configurationType": "MinSizeRel",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "-DXRES=1280 -DYRES=720",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "COMPRESS_LEVEL",
+          "value": "HEAVY",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "debug-2160",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "-DXRES=3840 -DYRES=2160",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "COMPRESS_LEVEL",
+          "value": "OFF",
+          "type": "STRING"
+        },
+        {
+          "name": "OPENGL_DEBUG",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "WINDOW",
+          "value": "True",
+          "type": "BOOL"
+        }
+      ]
+    },
+    {
+      "name": "heavy-2160",
+      "generator": "Ninja",
+      "configurationType": "MinSizeRel",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "-DXRES=3840 -DYRES=2160",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "COMPRESS_LEVEL",
+          "value": "HEAVY",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "sync-1080",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "-DXRES=1920 -DYRES=1080",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "COMPRESS_LEVEL",
+          "value": "OFF",
+          "type": "STRING"
+        },
+        {
+          "name": "OPENGL_DEBUG",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "WINDOW",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "SYNC",
+          "value": "True",
+          "type": "BOOL"
+        }
+      ]
+    },
+    {
+      "name": "capture-1080",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "-DXRES=1920 -DYRES=1080",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "COMPRESS_LEVEL",
+          "value": "OFF",
+          "type": "STRING"
+        },
+        {
+          "name": "CAPTURE",
+          "value": "True",
+          "type": "BOOL"
+        }
+      ]
+    },
+    {
+      "name": "sync-720",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "-DXRES=1280 -DYRES=720",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "COMPRESS_LEVEL",
+          "value": "OFF",
+          "type": "STRING"
+        },
+        {
+          "name": "OPENGL_DEBUG",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "WINDOW",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "SYNC",
+          "value": "True",
+          "type": "BOOL"
+        }
+      ]
+    },
+    {
+      "name": "uncompressed-720",
+      "generator": "Ninja",
+      "configurationType": "MinSizeRel",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "-DXRES=1280 -DYRES=720",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "COMPRESS_LEVEL",
+          "value": "OFF",
+          "type": "STRING"
+        }
+      ]
+    }
+  ]
+}

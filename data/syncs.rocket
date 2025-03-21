@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rootElement>
+<tracks rows="10000" startRow="0" endRow="1760" rowsPerBeat="4"
+beatsPerMin="138">
+	<track name="cam#yz" folded="0" muteKeyCount="0" color="ffb27474">
+    <key row="0" value="0" interpolation="0" />
+    <key row="112" value="0.000000" interpolation="1" />
+		<key row="144" value="0.800002" interpolation="0" />
+    <key row="1760" value="0.8" interpolation="0" />
+	</track>
+	<track name="height" folded="0" muteKeyCount="0" color="ffb28050">
+    <key row="0" value="0" interpolation="0" />
+    <key row="112" value="0.000000" interpolation="1" />
+		<key row="144" value="0.500000" interpolation="0" />
+    <key row="1760" value="0.500000" interpolation="0" />
+	</track>
+	<track name="zoom" folded="0" muteKeyCount="0" color="ffa9b250">
+		<key row="0" value="-3.000000" interpolation="1" />
+		<key row="272" value="12.000000" interpolation="0" />
+    <key row="1760" value="12.00000" interpolation="0" />
+	</track>
+</tracks>
+	</rootElement>
