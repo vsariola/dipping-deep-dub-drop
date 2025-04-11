@@ -2,22 +2,75 @@
 <rootElement>
 <tracks rows="10000" startRow="0" endRow="1760" rowsPerBeat="4"
 beatsPerMin="138">
+	<track name="cam#x" folded="0" muteKeyCount="0" color="ffb27474">
+		<key row="0" value="-0.190000" interpolation="0" />
+	</track>
+	<track name="cam#y" folded="0" muteKeyCount="0" color="ffb27474">
+		<key row="0" value="-0.720000" interpolation="0" />
+	</track>
 	<track name="cam#yz" folded="0" muteKeyCount="0" color="ffb27474">
-    <key row="0" value="0" interpolation="0" />
-    <key row="112" value="0.000000" interpolation="1" />
-		<key row="144" value="0.800002" interpolation="0" />
-    <key row="1760" value="0.8" interpolation="0" />
+		<key row="0" value="0.000000" interpolation="0" />
+		<key row="112" value="0.000000" interpolation="2" />
+		<key row="128" value="1.000001" interpolation="0" />
+		<key row="1760" value="0.800000" interpolation="0" />
+	</track>
+	<track name="cam#xz" folded="0" muteKeyCount="0" color="ffb27474">
+		<key row="0" value="0.000000" interpolation="0" />
+	</track>
+	<track name="fracselect" folded="0" muteKeyCount="0"
+color="ffb27474">
+		<key row="0" value="0.000000" interpolation="0" />
+		<key row="259" value="2.000000" interpolation="0" />
 	</track>
 	<track name="height" folded="0" muteKeyCount="0" color="ffb28050">
-    <key row="0" value="0" interpolation="0" />
-    <key row="112" value="0.000000" interpolation="1" />
-		<key row="144" value="0.500000" interpolation="0" />
-    <key row="1760" value="0.500000" interpolation="0" />
+		<key row="0" value="0.000000" interpolation="0" />
+		<key row="112" value="0.000000" interpolation="2" />
+		<key row="128" value="0.996875" interpolation="0" />
+		<key row="259" value="0.930000" interpolation="0" />
+		<key row="1760" value="0.500000" interpolation="0" />
 	</track>
 	<track name="zoom" folded="0" muteKeyCount="0" color="ffa9b250">
-		<key row="0" value="-3.000000" interpolation="1" />
-		<key row="272" value="12.000000" interpolation="0" />
-    <key row="1760" value="12.00000" interpolation="0" />
+		<key row="0" value="-2.000000" interpolation="0" />
+		<key row="16" value="-2.000000" interpolation="1" />
+		<key row="259" value="21.565718" interpolation="0" />
+		<key row="1759" value="244.000000" interpolation="1" />
+	</track>
+	<track name="julia#cx" folded="0" muteKeyCount="0"
+color="ffa9b250">
+		<key row="0" value="0.280020" interpolation="0" />
+		<key row="148" value="0.280020" interpolation="2" />
+		<key row="160" value="0.190020" interpolation="0" />
+		<key row="259" value="0.200020" interpolation="1" />
+		<key row="321" value="0.240020" interpolation="0" />
+	</track>
+	<track name="julia#cy" folded="0" muteKeyCount="0"
+color="ffa9b250">
+		<key row="0" value="-0.600000" interpolation="0" />
+		<key row="259" value="-0.590000" interpolation="1" />
+		<key row="321" value="-0.570000" interpolation="0" />
+	</track>
+	<track name="henge#r" folded="0" muteKeyCount="0"
+color="ffa9b250" />
+	<track name="foo#r" folded="0" muteKeyCount="0" color="ffa9b250" />
+	<track name="cam#depth" folded="0" muteKeyCount="0"
+color="ff60b250">
+		<key row="0" value="8.000000" interpolation="2" />
+		<key row="16" value="2.000000" interpolation="0" />
+	</track>
+	<track name="cam#blur" folded="0" muteKeyCount="0"
+color="ff4fb292">
+		<key row="0" value="4.000000" interpolation="0" />
+		<key row="16" value="1.000000" interpolation="0" />
+	</track>
+	<track name="light#x" folded="0" muteKeyCount="0"
+color="ff4f71b2">
+		<key row="0" value="0.000000" interpolation="1" />
+		<key row="112" value="1.000000" interpolation="0" />
+	</track>
+	<track name="light#y" folded="0" muteKeyCount="0"
+color="ff8850b2">
+		<key row="0" value="0.000000" interpolation="1" />
+		<key row="112" value="-1.000000" interpolation="0" />
 	</track>
 </tracks>
 	</rootElement>
