@@ -27,13 +27,31 @@ _minirocket_sync@8:
     jb     .nextkey             ;   goto .key;
 .key:
     fdivp   st1, st0            ; a=(t-t0)/d
-    test    byte [value_data+edx*2+ebx-row_data], 1
-    jnz		.out
-    fstp    st0     ; 
-    fldz            ; 0
-.out:
+    
+    movzx   eax, byte [type_data+edx+ebx-row_data]
+  
+     dec		eax
+ 	 jz		.done  
+     dec		eax 	 
+     jnz		.key_ramp
+     fild    word [c_three] ; 3 a
+     fsub    st0, st1                    ; 3-a a
+     fsub    st0, st1                    ; 3-2*a a
+     fmul    st0, st1                    ; a*(3-2*a) a
+     fmulp   st1                         ; a*a*(3-2*a)
+     jmp .done
+ .key_ramp:
+     dec		eax
+ 	 jnz		.key_step     
+     fmul    st0     ; a^2
+     jmp .done
+ .key_step:
+     fldz            ; 0 a
+     fstp    st1     ; a
+ .done:
+
     fild    word [value_data+edx*2+ebx-row_data]    ; v0*256 a
-    fidiv   word [c_256]           ; v0 a   % WARNING: we assume row data starts with 0x00 0x01 aka word 256... this is not universally true but for this intro it is
+    fidiv   word [c_256]           ; v0 a   
     fild    word [value_data+edx*2+2+ebx-row_data]  ; v1*256 v0 a
     fidiv   word [c_256]           ; v1 v0 a
     fsub    st0, st1    ; v1-v0 v0 a
@@ -51,6 +69,9 @@ _minirocket_sync@8:
 
 c_256:
     dw 0x100
+
+c_three:
+    dw 3
 
 section		.rtbss      bss		align=1
 start_times resd    numtracks

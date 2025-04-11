@@ -54,12 +54,12 @@ def main():
         starts += [curstart]
         curstart += len(k)
         rowtimes += [[(k[i + 1][0] - k[i][0]) if i < len(k) - 1 else 32767 for i, _ in enumerate(k)]]
-        def tofixed(x): return min(max(round(x * 128)<<1, -32768), 32767)
+        def tofixed(x): return min(max(round(x * 256), -32768), 32767)
         for e in k:
             f = e[1] * 256
             if f < -32768 or f > 32767:
                 print(f"Warning: keyframe value {e[1]} as 8.8 fixed point will be clamped to {f}")
-        values += [[tofixed(e[1])+e[2] for e in k]]
+        values += [[tofixed(e[1]) for e in k]]
         types += [[e[2] for e in k]]
         types[-1][-1] = 0  # set the interpolation mode to 0 for the last keyframe point
     values += [[0]]  # for extra safety, add one zero in end so we never read past the array during interpolation
@@ -74,6 +74,9 @@ def main():
                    f'\n' +
                    f'row_data:\n' +
                    ''.join('    dw ' + ','.join(str(v) for v in t) + '\n' for t in rowtimes) +
+                   f'\n' +
+                   f'type_data:\n' +
+                   ''.join('    db ' + ','.join(str(v) for v in t) + '\n' for t in types) +
                    f'\n' +
                    f'value_data:\n' +
                    ''.join('    dw ' + ','.join(str(v) for v in t) + '\n' for t in values) +

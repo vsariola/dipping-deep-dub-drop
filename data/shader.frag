@@ -8,6 +8,7 @@ out vec4 outcolor;
 
 const int BDR = RKT_NUMTRACKS+1;
 const int SNARE = RKT_NUMTRACKS+2;
+const int DUBCHORD = RKT_NUMTRACKS+3;
 
 // ----------------------------
 // CLIP
@@ -102,9 +103,6 @@ vec2 map(vec3 p) {
 
 vec2 iResolution = vec2(@XRES@,@YRES@);
 
-const float GA =2.399; 
-const mat2 rot = mat2(cos(GA),sin(GA),-sin(GA),cos(GA));
-
 // 	simplyfied version of Dave Hoskins blur
 vec3 dof(sampler2D tex,vec2 uv,float rad)
 {
@@ -114,7 +112,7 @@ vec3 dof(sampler2D tex,vec2 uv,float rad)
 	for (int j=0;j<80;j++)
     {  
         rad += 1./rad;
-	    angle*=rot;
+	    angle*=R(2.4);
         vec4 col=texture(tex,uv+pixel*(rad-1.)*angle);        
 		acc+=tan(col.xyz);                
 	}
@@ -122,10 +120,10 @@ vec3 dof(sampler2D tex,vec2 uv,float rad)
 }
 
 void main() {    
-    vec2 u = 2*gl_FragCoord.xy-iResolution;    
-    vec3 d = normalize(vec3(u/iResolution.y,1.4)),q=vec3(.5);    
-
-    u/=iResolution;
+    vec2 u = (2*gl_FragCoord.xy-iResolution)/iResolution.y;        
+    u.x += fract(sin(sin(u.y)*1000.)*4521.)*syncs[DUBCHORD]/3.;
+    vec3 d = normalize(vec3(u,1.4)),q=vec3(.5);    
+    
     if (syncs[ROW]<0) { // negative time indicates we should do post-processing       	
         vec2 uv = gl_FragCoord.xy/iResolution;
 	    outcolor=vec4(dof(postSampler,gl_FragCoord.xy/iResolution,texture(postSampler,uv).w),1.);
@@ -142,7 +140,7 @@ void main() {
     p.xz *= R(syncs[CAM_XZ]);
     d.yz *= R(syncs[CAM_YZ]);
     p.yz *= R(syncs[CAM_YZ]);   
-    
+   
     for (int i=0;i<200;i++)
        if (td+=dist=map(p).x,p+=d*dist,dist<MINDIST)
             break; 
@@ -151,7 +149,7 @@ void main() {
     vec2 m = map(p);
     vec3 n = normalize(m.x-vec3(map(p-N.xyy).x,map(p-N.yxy).x,map(p-N.yyx).x)); 
     float fog = exp(-td/2.);
-    vec3 col = mix(vec3(0),(.5+.5*sin(m.y*.1+vec3(0,1,1.5)))*max(dot(LIGHTDIR,n),0.)*10.,fog);   
+    vec3 col = mix(vec3(0),(.5+.5*sin(m.y*.15+vec3(syncs[COLOR_R],syncs[COLOR_G],syncs[COLOR_B])))*(max(dot(LIGHTDIR,n),0.)+syncs[SNARE]/2.)*9.,fog);   
     // ----------------------------
     // CLAP
     // ----------------------------                   

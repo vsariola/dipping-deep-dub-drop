@@ -9,7 +9,7 @@ static long int frame_counter = 0;
 #define CAPTURE_FRAME_RATE 60
 #endif
 
-SUSample buffer[SU_BUFFER_LENGTH];
+SUsample buffer[SU_BUFFER_LENGTH];
 
 void entrypoint(void)
 {
@@ -27,7 +27,7 @@ void entrypoint(void)
 	su_render_song(buffer);
 	FILE* f;
 	f = fopen("song.raw", "wb");
-	fwrite((void*)p1, sizeof(SUsample), SU_BUFFER_LENGTH, f);
+	fwrite((void*)buffer, sizeof(SUsample), SU_BUFFER_LENGTH, f);
 	fclose(f);
 
 	// initalize opengl context
@@ -40,6 +40,9 @@ void entrypoint(void)
 
 	long playCursor;
 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
 	do
 	{
 		PeekMessage(0, 0, 0, 0, PM_REMOVE);
@@ -49,25 +52,36 @@ void entrypoint(void)
 
 		playCursor = (frame_counter++ * SU_SAMPLE_RATE) / CAPTURE_FRAME_RATE * 2 * sizeof(SUsample);
 
-		float syncs[1 + RKT_NUMTRACKS];
+		float syncs[1 + RKT_NUMTRACKS + SU_NUMSYNCS];
 		minirocket_sync(
 			playCursor / TIME_DIVISOR,
 			syncs
 		);
+
+		for (int i = 0; i < SU_NUMSYNCS; ++i)
+		{
+			syncs[i + 1 + RKT_NUMTRACKS] = syncBuf[(playCursor / (2 * sizeof(SUsample)) >> 8) * SU_NUMSYNCS + i];
+		}
+
 		PFNGLUNIFORM1FVPROC glUniform1fvProc = ((PFNGLUNIFORM1FVPROC)wglGetProcAddress("glUniform1fv"));
-		glUniform1fvProc(0, RKT_NUMTRACKS + 1, syncs);
+		glUniform1fvProc(0, RKT_NUMTRACKS + SU_NUMSYNCS + 1, syncs);
 		CHECK_ERRORS();
 
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, XRES, YRES, 0);
 		glRects(-1, -1, 1, 1);
+
+		syncs[0] = -syncs[0];
+		glUniform1fvProc(0, RKT_NUMTRACKS + SU_NUMSYNCS + 1, syncs);
 		CHECK_ERRORS();
 
-		glBindTexture(GL_TEXTURE_2D, 1);
+		// First time this copies the font to texture unit 0 bound to texture 1
+		// Subsequent times this copies the screen to texture unit 1 bound to texture 0 for post processing		
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, XRES, YRES, 0);
 		((PFNGLGENERATEMIPMAPPROC)wglGetProcAddress("glGenerateMipmap"))(GL_TEXTURE_2D);
 		((PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture"))(GL_TEXTURE0);
 		glRects(-1, -1, 1, 1);
-
 
 		SwapBuffers(hDC);
 

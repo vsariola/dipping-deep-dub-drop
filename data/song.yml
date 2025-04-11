@@ -128,7 +128,7 @@ patch:
           id: 20
           parameters: {auxgain: 0, outgain: 77, stereo: 1}
         - type: envelope          
-          parameters: {attack: 32, channel: 2, decay: 70, gain: 128, release: 4, stereo: 0, sustain: 0}                   
+          parameters: {attack: 32, decay: 80, gain: 128, release: 80, stereo: 0, sustain: 0}                   
         - type: sync                   
         - type: pop
     - name: loooo
@@ -136,8 +136,7 @@ patch:
       units:
         - type: envelope
           id: 44
-          parameters: {attack: 23, decay: 67, gain: 128, release: 64, stereo: 0, sustain: 0}
-        - type: sync                              
+          parameters: {attack: 23, decay: 67, gain: 128, release: 64, stereo: 0, sustain: 0}        
         - type: send
           id: 53
           parameters: {amount: 103, port: 4, sendpop: 0, stereo: 0, target: 44, unit: 0, voice: 0}
@@ -167,8 +166,7 @@ patch:
       units:
         - type: envelope
           id: 57
-          parameters: {attack: 0, decay: 67, gain: 87, release: 64, stereo: 0, sustain: 0}
-        - type: sync                              
+          parameters: {attack: 0, decay: 67, gain: 87, release: 64, stereo: 0, sustain: 0}        
         - type: send
           id: 63
           parameters: {amount: 105, port: 4, sendpop: 0, stereo: 0, target: 57, unit: 0, voice: 0}
@@ -214,8 +212,7 @@ patch:
       units:
         - type: envelope
           id: 73
-          parameters: {attack: 51, decay: 61, gain: 110, release: 69, stereo: 0, sustain: 4}
-        - type: sync                              
+          parameters: {attack: 51, decay: 61, gain: 110, release: 69, stereo: 0, sustain: 4}        
         - type: send
           id: 83
           parameters: {amount: 100, port: 4, sendpop: 0, stereo: 0, target: 73, unit: 0, voice: 0}
@@ -252,8 +249,7 @@ patch:
       units:
         - type: envelope
           id: 89
-          parameters: {attack: 0, decay: 64, gain: 99, release: 16, stereo: 0, sustain: 95}
-        - type: sync                              
+          parameters: {attack: 0, decay: 64, gain: 99, release: 16, stereo: 0, sustain: 95}        
         - type: oscillator
           id: 90
           parameters: {color: 64, detune: 64, gain: 127, phase: 0, shape: 64, stereo: 0, transpose: 64, type: 2, unison: 0}

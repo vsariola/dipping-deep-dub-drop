@@ -56,8 +56,14 @@ void entrypoint(void)
 			playCursor / TIME_DIVISOR,
 			syncs
 		);
+
+		for (int i = 0; i < SU_NUMSYNCS; ++i)
+		{
+			syncs[i + 1 + RKT_NUMTRACKS] = syncBuf[(playCursor / (2 * sizeof(SUsample)) >> 8) * SU_NUMSYNCS + i];
+		}
+
 		PFNGLUNIFORM1FVPROC glUniform1fvProc = ((PFNGLUNIFORM1FVPROC)wglGetProcAddress("glUniform1fv"));
-		glUniform1fvProc(0, RKT_NUMTRACKS + 1, syncs);
+		glUniform1fvProc(0, RKT_NUMTRACKS + SU_NUMSYNCS + 1, syncs);
 		CHECK_ERRORS();
 
 		glRects(-1, -1, 1, 1);
@@ -65,6 +71,18 @@ void entrypoint(void)
 		
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, XRES, YRES, 0);			
+		glRects(-1, -1, 1, 1);
+
+		syncs[0] = -syncs[0];
+		glUniform1fvProc(0, RKT_NUMTRACKS + SU_NUMSYNCS + 1, syncs);
+		CHECK_ERRORS();
+
+		// First time this copies the font to texture unit 0 bound to texture 1
+		// Subsequent times this copies the screen to texture unit 1 bound to texture 0 for post processing		
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, XRES, YRES, 0);
+		((PFNGLGENERATEMIPMAPPROC)wglGetProcAddress("glGenerateMipmap"))(GL_TEXTURE_2D);
+		((PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture"))(GL_TEXTURE0);
 		glRects(-1, -1, 1, 1);
 
 		SwapBuffers(hDC);
