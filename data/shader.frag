@@ -1,8 +1,9 @@
 #version 430
 
 // SYNCS - do not touch this line, will be replaced with sync definitions
-layout(location=0) uniform float syncs[17*RKT_NUMTRACKS+1]; // location=0 ensures consistent location regardless of driver
-uniform sampler2D postSampler; // the scene is first rendered and copied to texture 1 for post-processing
+uniform sampler2D textSampler; // the scene is first rendered and copied to texture 1 for post-processing
+layout(binding = 1) uniform sampler2D postSampler; // the scene is first rendered and copied to texture 1 for post-processing
+layout(location = 0) uniform float syncs[17*RKT_NUMTRACKS+1]; // location=0 ensures consistent location regardless of driver
 
 out vec4 outcolor;
 
@@ -50,7 +51,7 @@ vec2 henge(vec2 z) {
         r =r*RMUL+z;        
         z =z.yx*R(syncs[HENGE_R]);
     }
-    return r/RDIV*vec2(.01,30);
+    return r/RDIV*vec2(.03,30);
 }
 
 
@@ -82,12 +83,15 @@ vec2 map(vec3 p) {
     vec2 d,d2; 
     for (int i=0;i<2;i++) {
         d2 = d;
-        int ring2 = max(ring,0);
+        int ring2 = clamp(ring,0,107);
         float zoom = exp((float(ring2)-syncs[ZOOM]));
-        vec2 u = p.xy*R(float(ring2))*zoom-CENTER;            
+        vec2 u = p.xy*R(float(ring2)-syncs[ROT])*zoom-CENTER;            
         int m = min(max(ring2/30+1,1),3);       
         d = frac(u,syncs[FRACSELECT]);        
-        d.x = -d.x/zoom*(syncs[HEIGHT]+syncs[BDR]/9.);
+        if (ring2 >= 107) {
+            d.y *= 1-texture(textSampler,(u+CENTER)*vec2(1,1.8)+.5+vec2(-.17,.05)).r;
+        }
+        d.x = -d.x/zoom*syncs[HEIGHT];
         ring++;
     }
     float t = mod(r,1.);    
@@ -123,10 +127,10 @@ void main() {
     vec2 u = (2*gl_FragCoord.xy-iResolution)/iResolution.y;        
     u.x += fract(sin(sin(u.y)*1000.)*4521.)*syncs[DUBCHORD]/3.;
     vec3 d = normalize(vec3(u,1.4)),q=vec3(.5);    
-    
+        
     if (syncs[ROW]<0) { // negative time indicates we should do post-processing       	
         vec2 uv = gl_FragCoord.xy/iResolution;
-	    outcolor=vec4(dof(postSampler,gl_FragCoord.xy/iResolution,texture(postSampler,uv).w),1.);
+	    outcolor=vec4(dof(postSampler,gl_FragCoord.xy/iResolution,texture(postSampler,uv).w),1.);        
         return;
     }
 
@@ -149,7 +153,7 @@ void main() {
     vec2 m = map(p);
     vec3 n = normalize(m.x-vec3(map(p-N.xyy).x,map(p-N.yxy).x,map(p-N.yyx).x)); 
     float fog = exp(-td/2.);
-    vec3 col = mix(vec3(0),(.5+.5*sin(m.y*.15+vec3(syncs[COLOR_R],syncs[COLOR_G],syncs[COLOR_B])))*(max(dot(LIGHTDIR,n),0.)+syncs[SNARE]/2.)*9.,fog);   
+    vec3 col = mix(vec3(0),(.5+.5*sin(m.y*syncs[COLOR_MULT]+vec3(syncs[COLOR_R],syncs[COLOR_G],syncs[COLOR_B])))*(max(dot(LIGHTDIR,n),0.)+syncs[SNARE]/2.)*9.*syncs[COLOR_FADE],fog);   
     // ----------------------------
     // CLAP
     // ----------------------------                   

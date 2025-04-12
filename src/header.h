@@ -82,3 +82,6 @@ extern "C"
 	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 #endif
+
+#pragma data_seg(".overtxt")
+static const char overtext[] = " chlumpie & pestis";
