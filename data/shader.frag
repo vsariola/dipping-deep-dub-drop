@@ -45,40 +45,34 @@ vec2 julia(vec2 z) {
 
 vec2 henge(vec2 z) {
     const int STEPS = 20;
-    const float RMUL = 1.3+syncs[BLLL]/15;
+    const float RMUL = 1.3;
     const float RDIV = pow(RMUL,float(STEPS));
     vec2 r = vec2(0);    
     for(int i=0;i<STEPS;i++) {         
-        z.x=cos(4.*z.x);        
-        r =r*RMUL+z;        
-        z =z.yx*R(syncs[HENGE_R]);
+        z.x=cos(4.*z.x+syncs[HENGE_SHIFT]);        
+        r = r*RMUL+z;        
+        z =z.yx*R(syncs[HENGE_ROT]);
     }
-    return r/RDIV*vec2(.04,30);
+    return r/RDIV*vec2(syncs[HENGE_HEIGHT],syncs[HENGE_COLOR]);
 }
 
 
-vec2 foobar(vec2 z) {
-    const int STEPS = 15;
-    const float RMUL = 1.2;
-    const float RDIV = pow(RMUL,float(STEPS));
-    float r = 0.;
-    for(int i=0;i<STEPS;i++) {         
-        z =z.yx*R(syncs[FOO_R]);
-        z.x-=round(z.x);                
-        z.x *= 2.;
-        r =r*RMUL+z.x*z.x;             
-        
+vec2 kale(vec2 z) {
+    const int STEPS = 20;
+    for(int i = 0; i < STEPS; i++){
+        z = abs(z)-1;        
+        z *= syncs[KALE_SCALE]*R(syncs[KALE_ROT]);
     }
-    return vec2(r*.1/RDIV,r*20./RDIV);    
+    return z*vec2(syncs[KALE_HEIGHT],syncs[KALE_COLOR]);
 }
 
 vec2 frac(vec2 z,float p) {
     if (p>1.)
-        return mix(henge(z),foobar(z),p-1.);
+        return mix(henge(z),kale(z),p-1.);
     return mix(julia(z),henge(z),p);
 }
 
-vec2 map(vec3 p) {
+vec2 map(vec3 p) {       
     float logdist = log(length(p));
     float r = -logdist+syncs[ZOOM];
     int ring = int(floor(r));
@@ -87,13 +81,13 @@ vec2 map(vec3 p) {
         d2 = d;
         int ring2 = clamp(ring,0,107);
         float zoom = exp((float(ring2)-syncs[ZOOM]));
-        vec2 u = p.xy*R(float(ring2)-.19)*zoom-CENTER;            
+        vec2 u = p.xy*R(float(ring2))*zoom-CENTER;            
         int m = min(max(ring2/30+1,1),3);       
         d = frac(u,syncs[FRACSELECT]);        
         if (ring2 >= 107) {
             d.y *= 1-texture(textSampler,(u+CENTER)*vec2(1,1.8)+.5+vec2(-.17,.05)).r;
         }
-        d.x = -d.x/zoom*syncs[HEIGHT];
+        d.x = -d.x/zoom*(syncs[HEIGHT]+syncs[BLLL]/3);
         ring++;
     }
     float t = mod(r,1.);    
@@ -125,10 +119,10 @@ void main() {
 	        angle*=R(2.4);
             vec4 col=texture(postSampler,uv+pixel*(rad-1.)*angle);        
 		    acc+=tan(col.xyz);                
-	    }
-        outcolor = vec4(sqrt(atan(acc/80.)),1);
-        return;
-    }
+	    }        
+        outcolor = vec4(pow(atan(acc/80.),vec3(.45)),1);
+        
+    } else {
 
     // ----------------------------
     // CLIP
@@ -140,18 +134,26 @@ void main() {
     p.xz *= R(syncs[CAM_XZ]);
     d.yz *= R(syncs[CAM_YZ]);
     p.yz *= R(syncs[CAM_YZ]);   
+    d.xy *= R(syncs[CAM_XY]);
+    p.xy *= R(syncs[CAM_XY]);   
+    
    
     for (int i=0;i<200;i++)
-       if (td+=dist=map(p).x,p+=d*dist,dist<MINDIST)
+       if (td+=dist=map(p).x*.7,p+=d*dist,dist<MINDIST)
             break; 
     
     
     vec2 m = map(p);
     vec3 n = normalize(m.x-vec3(map(p-N.xyy).x,map(p-N.yxy).x,map(p-N.yyx).x)); 
-    float fog = exp(-td/2.);
-    vec3 col = mix(vec3(0),(.5+.5*sin(m.y*(syncs[COLOR_MULT])+vec3(syncs[COLOR_R],syncs[COLOR_G],syncs[COLOR_B])))*(max(dot(LIGHTDIR,n),0.)+syncs[SNARE]/2.)*9.*syncs[COLOR_FADE],fog);   
+    float fog = exp(-td/syncs[FOG]);
+    vec3 col = .5+.5*sin(m.y*(syncs[COLOR_MULT])+vec3(syncs[COLOR_R],syncs[COLOR_G],syncs[COLOR_B]));
+    col *= max(dot(LIGHTDIR,n),0.)+syncs[SNARE]/2.;
+    col *= syncs[COLOR_FADE];
+    col *= fog;
     // ----------------------------
     // CLAP
     // ----------------------------                   
     outcolor = vec4(atan(col),abs(syncs[CAM_DEPTH]-td)/4.);        
+    }
+    outcolor.xyz -= (fract(43757.3*sin(dot(gl_FragCoord.xy, vec2(13.,78.)))))/256;
 }
