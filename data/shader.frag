@@ -125,7 +125,7 @@ void main() {
     
    
     for (int i=0;i<99;i++)
-       if (td+=dist=map(p).x*.7,p+=d*dist,abs(dist)<MINDIST)
+       if (td+=dist=map(p).x*.6,p+=d*dist,abs(dist)<MINDIST)
             break; 
     
     

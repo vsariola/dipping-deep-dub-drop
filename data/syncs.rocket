@@ -40,7 +40,7 @@ color="ffb27474">
 		<key row="212" value="2.500000" interpolation="2" />
 		<key row="220" value="1.200000" interpolation="0" />
 		<key row="400" value="1.200000" interpolation="2" />
-		<key row="416" value="-1.000000" interpolation="2" />
+		<key row="416" value="-2.000000" interpolation="2" />
 		<key row="432" value="1.000000" interpolation="0" />
 		<key row="912" value="1.000000" interpolation="2" />
 		<key row="928" value="0.000000" interpolation="0" />
@@ -184,8 +184,8 @@ color="ffa9b250">
 		<key row="416" value="0.119886" interpolation="2" />
 		<key row="417" value="0.000000" interpolation="2" />
 		<key row="432" value="0.120083" interpolation="1" />
-		<key row="560" value="0.121659" interpolation="1" />
-		<key row="561" value="0.000000" interpolation="1" />
+		<key row="560" value="0.121659" interpolation="2" />
+		<key row="561" value="0.000000" interpolation="2" />
 		<key row="576" value="0.120000" interpolation="1" />
 		<key row="728" value="0.123727" interpolation="2" />
 		<key row="729" value="0.000000" interpolation="2" />
