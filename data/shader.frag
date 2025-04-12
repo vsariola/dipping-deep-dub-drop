@@ -30,7 +30,7 @@ vec2 julia(vec2 z) {
     vec2 c = vec2(syncs[JULIA_CX],syncs[JULIA_CY]);
     float ld2 = 1.0;
     float lz2 = dot(z,z);
-    for(i=0; i<256; i++ )
+    for(i=0; i<199; i++ )
 	{
         ld2 *= 4.0*lz2;
         z = vec2( z.x*z.x - z.y*z.y, 2.0*z.x*z.y ) + c;
@@ -43,7 +43,7 @@ vec2 julia(vec2 z) {
 }
 
 vec2 henge(vec2 z) {
-    const int STEPS = 20;
+    const int STEPS = 10;
     const float RMUL = 1.3;
     const float RDIV = pow(RMUL,float(STEPS));
     vec2 r = vec2(0);    
@@ -125,7 +125,7 @@ void main() {
     p.xy *= R(syncs[CAM_XY]);   
     
    
-    for (int i=0;i<200;i++)
+    for (int i=0;i<99;i++)
        if (td+=dist=map(p).x*.7,p+=d*dist,abs(dist)<MINDIST)
             break; 
     
