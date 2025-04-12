@@ -65,11 +65,10 @@ vec2 kale(vec2 z) {
     return z*vec2(syncs[KALE_HEIGHT],syncs[KALE_COLOR]);
 }
 
-vec2 frac(vec3 p, int ring) {
+vec2 frac(vec3 p, float ring) {
     ring = clamp(ring,0,107);
-    float zoom = exp((float(ring)-syncs[ZOOM]));
-    vec2 u = p.xy*R(float(ring*ring))*zoom-CENTER;            
-    int m = min(max(ring/30+1,1),3);       
+    float zoom = exp((ring-syncs[ZOOM]));
+    vec2 u = p.xy*R(ring*ring)*zoom-CENTER;                
         
     vec2 d = syncs[FRACSELECT]>1. ? mix(henge(u),kale(u),syncs[FRACSELECT]-1.) : mix(julia(u),henge(u),syncs[FRACSELECT]);
      
@@ -81,10 +80,9 @@ vec2 frac(vec3 p, int ring) {
 }
 
 vec2 map(vec3 p) {           
-    float r = -log(length(p))+syncs[ZOOM];
-    float t = mod(r,1.);    
-    int ring = int(r-t);    
-    vec2 d = mix(frac(p,ring),frac(p,ring+1),t);    
+    float r = -log(length(p))+syncs[ZOOM];    
+    float ring = floor(r);    
+    vec2 d = mix(frac(p,ring),frac(p,ring+1),mod(r,1.));    
     return vec2(-p.z-d.x,d.y);
 }
 
