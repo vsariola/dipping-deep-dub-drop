@@ -18,7 +18,7 @@ const int SNRFX = RKT_NUMTRACKS+5;
 // ----------------------------        
 
 #define R(a) mat2(cos(a),sin(a),-sin(a),cos(a))
-const float MINDIST = .00001;
+const float MINDIST = .0001;
 const vec2 N=vec2(.04,0);
 vec3 LIGHTDIR = normalize(vec3(syncs[LIGHT_X],syncs[LIGHT_Y],-1));
 vec2 CENTER = vec2(syncs[CAM_X],syncs[CAM_Y]);
@@ -37,9 +37,8 @@ vec2 julia(vec2 z) {
         lz2 = dot(z,z);
 		if( lz2>200.0 ) break;
 	}
-    float d = sqrt(lz2/ld2)*log(lz2);            
-    d = atan(d*10.)/10.;
-	return vec2(d,float(i)-log2(log(lz2)));    
+    float d = sqrt(lz2/ld2)*log(lz2);                
+	return vec2(atan(d*10.)/10.,float(i)-log2(log(lz2)));    
 }
 
 vec2 henge(vec2 z) {
