@@ -10,6 +10,8 @@ out vec4 outcolor;
 const int BDR = RKT_NUMTRACKS+1;
 const int SNARE = RKT_NUMTRACKS+2;
 const int DUBCHORD = RKT_NUMTRACKS+3;
+const int BLLL = RKT_NUMTRACKS+4;
+const int SNRFX = RKT_NUMTRACKS+5;
 
 // ----------------------------
 // CLIP
@@ -43,7 +45,7 @@ vec2 julia(vec2 z) {
 
 vec2 henge(vec2 z) {
     const int STEPS = 20;
-    const float RMUL = 1.3;
+    const float RMUL = 1.3+syncs[BLLL]/15;
     const float RDIV = pow(RMUL,float(STEPS));
     vec2 r = vec2(0);    
     for(int i=0;i<STEPS;i++) {         
@@ -51,7 +53,7 @@ vec2 henge(vec2 z) {
         r =r*RMUL+z;        
         z =z.yx*R(syncs[HENGE_R]);
     }
-    return r/RDIV*vec2(.03,30);
+    return r/RDIV*vec2(.04,30);
 }
 
 
@@ -85,7 +87,7 @@ vec2 map(vec3 p) {
         d2 = d;
         int ring2 = clamp(ring,0,107);
         float zoom = exp((float(ring2)-syncs[ZOOM]));
-        vec2 u = p.xy*R(float(ring2)-syncs[ROT])*zoom-CENTER;            
+        vec2 u = p.xy*R(float(ring2)-.19)*zoom-CENTER;            
         int m = min(max(ring2/30+1,1),3);       
         d = frac(u,syncs[FRACSELECT]);        
         if (ring2 >= 107) {
@@ -105,32 +107,26 @@ vec2 map(vec3 p) {
 // CLAP
 // ----------------------------  
 
-vec2 iResolution = vec2(@XRES@,@YRES@);
-
-// 	simplyfied version of Dave Hoskins blur
-vec3 dof(sampler2D tex,vec2 uv,float rad)
-{
-	vec3 acc=vec3(0);
-    vec2 pixel=vec2(.001,.001),angle=vec2(0,rad*syncs[CAM_BLUR]);
-    rad=1.;
-	for (int j=0;j<80;j++)
-    {  
-        rad += 1./rad;
-	    angle*=R(2.4);
-        vec4 col=texture(tex,uv+pixel*(rad-1.)*angle);        
-		acc+=tan(col.xyz);                
-	}
-    return sqrt(atan(acc/80.));	
-}
-
 void main() {    
-    vec2 u = (2*gl_FragCoord.xy-iResolution)/iResolution.y;        
+    vec2 iResolution = vec2(@XRES@,@YRES@);
+    vec2 u = (2*gl_FragCoord.xy-iResolution)/iResolution.y;            
     u.x += fract(sin(sin(u.y)*1000.)*4521.)*syncs[DUBCHORD]/3.;
     vec3 d = normalize(vec3(u,1.4)),q=vec3(.5);    
         
     if (syncs[ROW]<0) { // negative time indicates we should do post-processing       	
         vec2 uv = gl_FragCoord.xy/iResolution;
-	    outcolor=vec4(dof(postSampler,gl_FragCoord.xy/iResolution,texture(postSampler,uv).w),1.);        
+        float rad = texture(postSampler,uv).w;	         
+        vec3 acc=vec3(0);
+        vec2 pixel=vec2(.001,.001),angle=vec2(0,rad*syncs[CAM_BLUR]);
+        rad=1.;
+	    for (int j=0;j<80;j++)
+        {  
+            rad += 1./rad;
+	        angle*=R(2.4);
+            vec4 col=texture(postSampler,uv+pixel*(rad-1.)*angle);        
+		    acc+=tan(col.xyz);                
+	    }
+        outcolor = vec4(sqrt(atan(acc/80.)),1);
         return;
     }
 
@@ -153,7 +149,7 @@ void main() {
     vec2 m = map(p);
     vec3 n = normalize(m.x-vec3(map(p-N.xyy).x,map(p-N.yxy).x,map(p-N.yyx).x)); 
     float fog = exp(-td/2.);
-    vec3 col = mix(vec3(0),(.5+.5*sin(m.y*syncs[COLOR_MULT]+vec3(syncs[COLOR_R],syncs[COLOR_G],syncs[COLOR_B])))*(max(dot(LIGHTDIR,n),0.)+syncs[SNARE]/2.)*9.*syncs[COLOR_FADE],fog);   
+    vec3 col = mix(vec3(0),(.5+.5*sin(m.y*(syncs[COLOR_MULT])+vec3(syncs[COLOR_R],syncs[COLOR_G],syncs[COLOR_B])))*(max(dot(LIGHTDIR,n),0.)+syncs[SNARE]/2.)*9.*syncs[COLOR_FADE],fog);   
     // ----------------------------
     // CLAP
     // ----------------------------                   

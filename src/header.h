@@ -60,9 +60,7 @@ static WAVEFORMATEX WaveFMT =
 	0                                      // extension not needed
 };
 
-// the song takes ~41954594 bytes, but we allocate more so that:
-// 1) the playcursor keeps on playing empty music afterwards
-// 2) we allocate aligned number of bytes (log2(41954594) = 25.3
+// the song takes less but we allocate more
 #define BUFFER_SIZE (1 << 27)
 
 #pragma data_seg(".descfmt")

@@ -95,10 +95,6 @@ void entrypoint(void)
 	glBindTexture(GL_TEXTURE_2D, 1);
 	CHECK_ERRORS();
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, XRES, YRES, 0);
-	((PFNGLGENERATEMIPMAPPROC)wglGetProcAddress("glGenerateMipmap"))(GL_TEXTURE_2D);	
-
 	// create and compile shader programs
 	pidMain = ((PFNGLCREATESHADERPROGRAMVPROC)wglGetProcAddress("glCreateShaderProgramv"))(GL_FRAGMENT_SHADER, 1, &shader_sync_frag);
 	CHECK_ERRORS();
@@ -107,11 +103,20 @@ void entrypoint(void)
 
 	long playCursor;	
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
 	do
 	{
+		// First time this copies the font to texture unit 0 bound to texture 1
+		// Subsequent times this copies the screen to texture unit 1 bound to texture 0 for post processing		
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, XRES, YRES, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		((PFNGLGENERATEMIPMAPPROC)wglGetProcAddress("glGenerateMipmap"))(GL_TEXTURE_2D);
+		glRects(-1, -1, 1, 1);
+
+
+		SwapBuffers(hDC);
+
 		PeekMessage(0, 0, 0, 0, PM_REMOVE);
 
 		((PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram"))(pidMain);
@@ -148,18 +153,8 @@ void entrypoint(void)
 		syncs[0] = -syncs[0];
 		glUniform1fvProc(0, RKT_NUMTRACKS + SU_NUMSYNCS + 1, syncs);
 		CHECK_ERRORS();
-		
-		// First time this copies the font to texture unit 0 bound to texture 1
-		// Subsequent times this copies the screen to texture unit 1 bound to texture 0 for post processing		
+
 		(((PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture")))(GL_TEXTURE1);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);		
-		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, XRES, YRES, 0);
-		((PFNGLGENERATEMIPMAPPROC)wglGetProcAddress("glGenerateMipmap"))(GL_TEXTURE_2D);		
-		glRects(-1, -1, 1, 1);
-		
-
-
-		SwapBuffers(hDC);
 
 	} while (!GetAsyncKeyState(VK_ESCAPE));
 

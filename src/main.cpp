@@ -15,6 +15,10 @@ void entrypoint(void)
 	#endif
 	const HDC hDC = GetDC(window);
 
+	// initalize opengl context
+	SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
+	wglMakeCurrent(hDC, wglCreateContext(hDC));	
+
 	LPDIRECTSOUND lpds;
 	LPDIRECTSOUNDBUFFER buf;
 	DirectSoundCreate(0, &lpds, 0);
@@ -27,15 +31,6 @@ void entrypoint(void)
 
 	buf->Lock(0, BUFFER_SIZE, &p1, &l1, NULL, NULL, NULL);	
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)su_render_song, p1, 0, 0);
-
-	// initalize opengl context
-	SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
-	wglMakeCurrent(hDC, wglCreateContext(hDC));
-
-	// initalize opengl context
-	SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
-	wglMakeCurrent(hDC, wglCreateContext(hDC));
-
 
 	// write text
 	SelectObject(hDC, CreateFont(155 * YRES / 1080, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE | DEFAULT_PITCH, "Verdana"));
@@ -52,11 +47,7 @@ void entrypoint(void)
 	CHECK_ERRORS();
 
 	glBindTexture(GL_TEXTURE_2D, 1);
-	CHECK_ERRORS();
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, XRES, YRES, 0);
-	((PFNGLGENERATEMIPMAPPROC)wglGetProcAddress("glGenerateMipmap"))(GL_TEXTURE_2D);
+	CHECK_ERRORS();	
 
 	// create and compile shader programs
 	pidMain = ((PFNGLCREATESHADERPROGRAMVPROC)wglGetProcAddress("glCreateShaderProgramv"))(GL_FRAGMENT_SHADER, 1, &shader_sync_frag);
@@ -66,17 +57,23 @@ void entrypoint(void)
 
 	long playCursor;	
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
 	do
 	{				
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, XRES, YRES, 0);
+		((PFNGLGENERATEMIPMAPPROC)wglGetProcAddress("glGenerateMipmap"))(GL_TEXTURE_2D);
+		glRects(-1, -1, 1, 1);
+
+		SwapBuffers(hDC);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		PeekMessage(0, 0, 0, 0, PM_REMOVE);
 
 		((PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram"))(pidMain);
 		CHECK_ERRORS();
 
-		buf->GetCurrentPosition((DWORD*)&playCursor, NULL);
+		buf->GetCurrentPosition((DWORD*)&playCursor, NULL);		
 		float syncs[1 + RKT_NUMTRACKS + SU_NUMSYNCS];
 		minirocket_sync(
 			playCursor / TIME_DIVISOR,
@@ -101,13 +98,7 @@ void entrypoint(void)
 
 		// First time this copies the font to texture unit 0 bound to texture 1
 		// Subsequent times this copies the screen to texture unit 1 bound to texture 0 for post processing		
-		(((PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture")))(GL_TEXTURE1);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, XRES, YRES, 0);
-		((PFNGLGENERATEMIPMAPPROC)wglGetProcAddress("glGenerateMipmap"))(GL_TEXTURE_2D);
-		glRects(-1, -1, 1, 1);
-
-		SwapBuffers(hDC);
+		(((PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture")))(GL_TEXTURE1);		
 	} while (!GetAsyncKeyState(VK_ESCAPE) && playCursor < 0x2800000);
 
 	ExitProcess(0);
