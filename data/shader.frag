@@ -18,7 +18,6 @@ const int SNRFX = RKT_NUMTRACKS+5;
 // ----------------------------        
 
 #define R(a) mat2(cos(a),sin(a),-sin(a),cos(a))
-const float Q = 6.;
 const float MINDIST = .00001;
 const vec2 N=vec2(.04,0);
 vec3 LIGHTDIR = normalize(vec3(syncs[LIGHT_X],syncs[LIGHT_Y],-1));
@@ -66,36 +65,28 @@ vec2 kale(vec2 z) {
     return z*vec2(syncs[KALE_HEIGHT],syncs[KALE_COLOR]);
 }
 
-vec2 frac(vec2 z,float p) {
-    if (p>1.)
-        return mix(henge(z),kale(z),p-1.);
-    return mix(julia(z),henge(z),p);
+vec2 frac(vec3 p, int ring) {
+    ring = clamp(ring,0,107);
+    float zoom = exp((float(ring)-syncs[ZOOM]));
+    vec2 u = p.xy*R(float(ring*ring))*zoom-CENTER;            
+    int m = min(max(ring/30+1,1),3);       
+        
+    vec2 d = syncs[FRACSELECT]>1. ? mix(henge(u),kale(u),syncs[FRACSELECT]-1.) : mix(julia(u),henge(u),syncs[FRACSELECT]);
+     
+    if (ring >= 107) {
+        d.y *= 1-texture(textSampler,(u+CENTER)*vec2(1,1.8)+.5+vec2(-.17,.05)).r;
+    }
+    d.x = -d.x/zoom*(syncs[HEIGHT]+syncs[BLLL]/3);
+    return d;
 }
 
-vec2 map(vec3 p) {       
-    float logdist = log(length(p));
-    float r = -logdist+syncs[ZOOM];
-    int ring = int(floor(r));
-    vec2 d,d2; 
-    for (int i=0;i<2;i++) {
-        d2 = d;
-        int ring2 = clamp(ring,0,107);
-        float zoom = exp((float(ring2)-syncs[ZOOM]));
-        vec2 u = p.xy*R(float(ring2))*zoom-CENTER;            
-        int m = min(max(ring2/30+1,1),3);       
-        d = frac(u,syncs[FRACSELECT]);        
-        if (ring2 >= 107) {
-            d.y *= 1-texture(textSampler,(u+CENTER)*vec2(1,1.8)+.5+vec2(-.17,.05)).r;
-        }
-        d.x = -d.x/zoom*(syncs[HEIGHT]+syncs[BLLL]/3);
-        ring++;
-    }
+vec2 map(vec3 p) {           
+    float r = -log(length(p))+syncs[ZOOM];
     float t = mod(r,1.);    
-    d = mix(d2,d,t);    
+    int ring = int(r-t);    
+    vec2 d = mix(frac(p,ring),frac(p,ring+1),t);    
     return vec2(-p.z-d.x,d.y);
 }
-
-
 
 // ----------------------------
 // CLAP
@@ -105,22 +96,20 @@ void main() {
     vec2 iResolution = vec2(@XRES@,@YRES@);
     vec2 u = (2*gl_FragCoord.xy-iResolution)/iResolution.y;            
     u.x += fract(sin(sin(u.y)*1000.)*4521.)*syncs[DUBCHORD]/3.;
-    vec3 d = normalize(vec3(u,1.4)),q=vec3(.5);    
+    vec3 d = normalize(vec3(u,1.4));    
         
-    if (syncs[ROW]<0) { // negative time indicates we should do post-processing       	
-        vec2 uv = gl_FragCoord.xy/iResolution;
-        float rad = texture(postSampler,uv).w;	         
+    if (syncs[ROW]<0) { // negative time indicates we should do post-processing       	        
         vec3 acc=vec3(0);
-        vec2 pixel=vec2(.001,.001),angle=vec2(0,rad*syncs[CAM_BLUR]);
-        rad=1.;
+        vec2 uv = gl_FragCoord.xy/iResolution;
+        vec2 angle=vec2(0,texture(postSampler,uv).w*syncs[DOF_BLUR]*.001);
+        float rad=1.;
 	    for (int j=0;j<80;j++)
         {  
             rad += 1./rad;
-	        angle*=R(2.4);
-            vec4 col=texture(postSampler,uv+pixel*(rad-1.)*angle);        
-		    acc+=tan(col.xyz);                
+	        angle*=R(2.4);                
+		    acc +=texture(postSampler,uv+(rad-1.)*angle).xyz;                
 	    }        
-        outcolor = vec4(pow(atan(acc/80.),vec3(.45)),1);
+        outcolor = vec4(pow(acc/80.,vec3(.45)),1);
         
     } else {
 
@@ -139,21 +128,21 @@ void main() {
     
    
     for (int i=0;i<200;i++)
-       if (td+=dist=map(p).x*.7,p+=d*dist,dist<MINDIST)
+       if (td+=dist=map(p).x*.7,p+=d*dist,abs(dist)<MINDIST)
             break; 
     
     
     vec2 m = map(p);
     vec3 n = normalize(m.x-vec3(map(p-N.xyy).x,map(p-N.yxy).x,map(p-N.yyx).x)); 
-    float fog = exp(-td/syncs[FOG]);
     vec3 col = .5+.5*sin(m.y*(syncs[COLOR_MULT])+vec3(syncs[COLOR_R],syncs[COLOR_G],syncs[COLOR_B]));
+    col = mix(col, vec3(0.0), isnan(col));
     col *= max(dot(LIGHTDIR,n),0.)+syncs[SNARE]/2.;
     col *= syncs[COLOR_FADE];
-    col *= fog;
+    col *= exp(-td/syncs[FOG]);
     // ----------------------------
     // CLAP
     // ----------------------------                   
-    outcolor = vec4(atan(col),abs(syncs[CAM_DEPTH]-td)/4.);        
+    outcolor = vec4(atan(col),abs(syncs[DOF_DEPTH]-td)/4.);        
     }
     outcolor.xyz -= (fract(43757.3*sin(dot(gl_FragCoord.xy, vec2(13.,78.)))))/256;
 }

@@ -99,7 +99,7 @@ void entrypoint(void)
 		// First time this copies the font to texture unit 0 bound to texture 1
 		// Subsequent times this copies the screen to texture unit 1 bound to texture 0 for post processing		
 		(((PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture")))(GL_TEXTURE1);		
-	} while (!GetAsyncKeyState(VK_ESCAPE) && playCursor < 0x2800000);
+	} while (!GetAsyncKeyState(VK_ESCAPE) && playCursor < SU_LENGTH_IN_SAMPLES*2*sizeof(SUsample));
 
 	ExitProcess(0);
 }
