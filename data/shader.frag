@@ -65,7 +65,7 @@ vec2 kale(vec2 z) {
 }
 
 vec2 frac(vec3 p, float ring) {
-    ring = clamp(ring,0,107);
+    ring = clamp(ring,0,107);    
     float zoom = exp((ring-syncs[ZOOM]));
     vec2 u = p.xy*R(ring*ring)*zoom-CENTER;                
         
@@ -135,7 +135,7 @@ void main() {
     
     vec2 m = map(p);
     vec3 n = normalize(m.x-vec3(map(p-N.xyy).x,map(p-N.yxy).x,map(p-N.yyx).x)); 
-    col = .5+.5*sin(m.y*(syncs[COLOR_MULT])+vec3(syncs[COLOR_R],syncs[COLOR_G],syncs[COLOR_B]));
+    col = .5+.5*sin(m.y*syncs[COLOR_MULT]+vec3(syncs[COLOR_R],syncs[COLOR_G],syncs[COLOR_B]));
     col = atan(  
         mix(col, vec3(0), isnan(col)) // there was some nans from fractals, so avoid white pixels
         * (max(dot(LIGHTDIR,n),0.)+syncs[SNARE]/2.) // lighting
