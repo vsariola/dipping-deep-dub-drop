@@ -7,11 +7,10 @@ layout(location = 0) uniform float syncs[10+RKT_NUMTRACKS+1]; // location=0 ensu
 
 out vec4 outcolor;
 
-const int BDR = RKT_NUMTRACKS+1;
-const int SNARE = RKT_NUMTRACKS+2;
-const int DUBCHORD = RKT_NUMTRACKS+3;
-const int BLLL = RKT_NUMTRACKS+4;
-const int SNRFX = RKT_NUMTRACKS+5;
+const int SNARE = RKT_NUMTRACKS+1;
+const int DUBCHORD = RKT_NUMTRACKS+2;
+const int BLLL = RKT_NUMTRACKS+3;
+const int SNRFX = RKT_NUMTRACKS+4;
 
 // ----------------------------
 // CLIP

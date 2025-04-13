@@ -52,10 +52,7 @@ patch:
       units:
         - type: envelope
           id: 1
-          parameters: {attack: 0, decay: 69, gain: 113, release: 94, stereo: 0, sustain: 0}
-        - type: sync
-          id: 222
-          parameters: {}
+          parameters: {attack: 0, decay: 69, gain: 113, release: 94, stereo: 0, sustain: 0}        
         - type: send
           id: 35
           parameters: {amount: 95, port: 4, sendpop: 0, stereo: 0, target: 1, voice: 0}
