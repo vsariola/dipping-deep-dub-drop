@@ -1,14 +1,16 @@
 // This header contains some useful functions for debugging OpenGL.
 // Remember to disable them when building your final releases.
-#ifdef OPENGL_DEBUG
+#ifdef DEBUG_INTRO
 
 #include <windows.h>
 #include <GL/gl.h>
 #include "glext.h"
+#include <stdio.h>
 
 #define STRINGIFY2(x) #x // Thanks sooda!
 #define STRINGIFY(x) STRINGIFY2(x)
 #define CHECK_ERRORS() assertGlError(STRINGIFY(__LINE__))
+#define CHECK_RESULT(command,expected) checkResult(__LINE__, STRINGIFY(command), (int)(command), (int)(expected))
 
 static GLchar* getErrorString(GLenum errorCode)
 {
@@ -36,20 +38,31 @@ static GLchar* getErrorString(GLenum errorCode)
 	return (GLchar*) "Unknown";
 }
 
-static void assertGlError(const char* error_message)
+static void assertGlError(const char* message)
 {
 	const GLenum ErrorValue = glGetError();
 	if (ErrorValue == GL_NO_ERROR) return;
 
-	const char* APPEND_DETAIL_STRING = ": %s\n";
-	const size_t APPEND_LENGTH = strlen(APPEND_DETAIL_STRING) + 1;
-	const size_t message_length = strlen(error_message);
-	MessageBox(NULL, error_message, getErrorString(ErrorValue), 0x00000000L);
+	MessageBox(NULL, message, getErrorString(ErrorValue), 0x00000000L);
+	ExitProcess(0);
+}
+
+
+static void checkResult(int line, const char* code, int got, int expected)
+{	
+	if (got == expected)
+		return;
+
+	char message[1024];
+	sprintf_s(message, 1024, "On line %d, \"%s\" returned %d, expected %d", line, code, got, expected);
+
+	MessageBox(NULL, message, NULL, 0x00000000L);
 	ExitProcess(0);
 }
 
 #else
 
 #define CHECK_ERRORS()
+#define CHECK_RESULT(command,expectedResult) command
 
 #endif

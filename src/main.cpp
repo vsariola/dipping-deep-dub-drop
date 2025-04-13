@@ -99,7 +99,7 @@ void entrypoint(void)
 	#ifdef WINDOW
 		HWND window = CreateWindow("static", 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0);
 	#else // full screen, the default behaviour
-		ChangeDisplaySettings(&screenSettings, CDS_FULLSCREEN);
+		CHECK_RESULT(ChangeDisplaySettings(&screenSettings, CDS_FULLSCREEN), DISP_CHANGE_SUCCESSFUL);
 		ShowCursor(0);
 		HWND window = CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE | WS_MAXIMIZE, 0, 0, 0, 0, 0, 0, 0, 0);
 	#endif
@@ -107,15 +107,15 @@ void entrypoint(void)
 
 	LPDIRECTSOUND lpds;
 	LPDIRECTSOUNDBUFFER buf;
-	DirectSoundCreate(0, &lpds, 0);
+	CHECK_RESULT(DirectSoundCreate(0, &lpds, 0),DS_OK);
 
-	lpds->SetCooperativeLevel(window, DSSCL_PRIORITY);
-	lpds->CreateSoundBuffer(&bufferDesc, &buf, NULL);
+	CHECK_RESULT(lpds->SetCooperativeLevel(window, DSSCL_PRIORITY),DS_OK);
+	CHECK_RESULT(lpds->CreateSoundBuffer(&bufferDesc, &buf, NULL),DS_OK);
 
 	LPVOID p1;
 	DWORD l1;
 
-	buf->Lock(0, BUFFER_SIZE, &p1, &l1, NULL, NULL, NULL);	
+	CHECK_RESULT(buf->Lock(0, BUFFER_SIZE, &p1, &l1, NULL, NULL, NULL),DS_OK);
 #ifdef CAPTURE
 	su_render_song((SUsample*)p1);
 	FILE* f;
@@ -127,8 +127,8 @@ void entrypoint(void)
 #endif
 
 	// initalize opengl context
-	SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
-	wglMakeCurrent(hDC, wglCreateContext(hDC));
+	CHECK_RESULT(SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd),TRUE);
+	CHECK_RESULT(wglMakeCurrent(hDC, wglCreateContext(hDC)),TRUE);
 
 	// write text
 	SelectObject(hDC, CreateFont(155 * YRES / 1080, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE | DEFAULT_PITCH, "Verdana"));
@@ -152,7 +152,7 @@ void entrypoint(void)
 	CHECK_ERRORS();
 
 #ifndef CAPTURE
-	buf->Play(0, 0, 0);
+	CHECK_RESULT(buf->Play(0, 0, 0),DS_OK);
 #endif
 
 	long playCursor;	
@@ -160,12 +160,17 @@ void entrypoint(void)
 	do
 	{				
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		CHECK_ERRORS();
 		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, XRES, YRES, 0);
+		CHECK_ERRORS();
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		CHECK_ERRORS();
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		CHECK_ERRORS();
 		glRects(-1, -1, 1, 1);
+		CHECK_ERRORS();
 
-		SwapBuffers(hDC);
+		CHECK_RESULT(SwapBuffers(hDC), TRUE);
 		PeekMessage(0, 0, 0, 0, PM_REMOVE);
 
 		((PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram"))(pidMain);
@@ -174,7 +179,7 @@ void entrypoint(void)
 #ifdef CAPTURE
 		playCursor = SaveFrame(hDC,window);
 #else
-		buf->GetCurrentPosition((DWORD*)&playCursor, NULL);
+		CHECK_RESULT(buf->GetCurrentPosition((DWORD*)&playCursor, NULL), DS_OK);
 #endif
 
 		float syncs[1 + RKT_NUMTRACKS + SU_NUMSYNCS];
@@ -205,6 +210,7 @@ void entrypoint(void)
 		// Subsequent times this copies the screen to texture unit 1 bound to texture 0 for post processing		
 		(((PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture")))(GL_TEXTURE1);		
 		glBindTexture(GL_TEXTURE_2D, 0);
+		CHECK_ERRORS();
 	} while (!GetAsyncKeyState(VK_ESCAPE) && playCursor < SU_LENGTH_IN_SAMPLES*2*sizeof(SUsample));
 
 	ExitProcess(0);
