@@ -105,10 +105,6 @@ void entrypoint(void)
 	#endif
 	const HDC hDC = GetDC(window);
 
-	// initalize opengl context
-	SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
-	wglMakeCurrent(hDC, wglCreateContext(hDC));	
-
 	LPDIRECTSOUND lpds;
 	LPDIRECTSOUNDBUFFER buf;
 	DirectSoundCreate(0, &lpds, 0);
@@ -129,6 +125,10 @@ void entrypoint(void)
 #else
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)su_render_song, p1, 0, 0);
 #endif
+
+	// initalize opengl context
+	SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
+	wglMakeCurrent(hDC, wglCreateContext(hDC));
 
 	// write text
 	SelectObject(hDC, CreateFont(155 * YRES / 1080, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE | DEFAULT_PITCH, "Verdana"));
