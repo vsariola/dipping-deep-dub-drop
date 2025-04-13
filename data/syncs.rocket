@@ -3,12 +3,14 @@
 <tracks rows="10000" startRow="0" endRow="1008" rowsPerBeat="4"
 beatsPerMin="138">
 	<track name="cam#x" folded="0" muteKeyCount="0" color="ffb27474">
-		<key row="32" value="-0.520000" interpolation="1" />
+		<key row="32" value="-0.520000" interpolation="0" />
+		<key row="304" value="-0.520000" interpolation="1" />
 		<key row="928" value="1.190000" interpolation="0" />
 		<key row="1008" value="-0.040000" interpolation="0" />
 	</track>
 	<track name="cam#y" folded="0" muteKeyCount="0" color="ffb27474">
-		<key row="32" value="-0.790000" interpolation="1" />
+		<key row="32" value="-0.790000" interpolation="0" />
+		<key row="304" value="-0.790000" interpolation="1" />
 		<key row="928" value="1.100000" interpolation="0" />
 	</track>
 	<track name="cam#yz" folded="0" muteKeyCount="0" color="ffb27474">

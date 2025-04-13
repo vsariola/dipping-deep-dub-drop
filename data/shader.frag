@@ -3,7 +3,7 @@
 // SYNCS - do not touch this line, will be replaced with sync definitions
 uniform sampler2D textSampler; // the scene is first rendered and copied to texture 1 for post-processing
 layout(binding = 1) uniform sampler2D postSampler; // the scene is first rendered and copied to texture 1 for post-processing
-layout(location = 0) uniform float syncs[17*RKT_NUMTRACKS+1]; // location=0 ensures consistent location regardless of driver
+layout(location = 0) uniform float syncs[10+RKT_NUMTRACKS+1]; // location=0 ensures consistent location regardless of driver
 
 out vec4 outcolor;
 
