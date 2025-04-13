@@ -1,5 +1,7 @@
 #include "bitmap.h"
 #include <song.h>
+#include <GL/gl.h>
+#include <glext.h>
 
 #define ERRORBOX2(x) {MessageBoxA(hwnd,"there was a bad when " x,"bad",MB_OK); ExitProcess(-1);}
 
@@ -7,6 +9,9 @@ static long int frame_counter = 0;
 
 long SaveFrame(HDC hDC, HWND window) {
     static unsigned char framepixels[XRES * YRES * 4];
+    glReadBuffer(GL_BACK);
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glReadPixels(0, 0, XRES, YRES, GL_BGRA, GL_UNSIGNED_BYTE, framepixels);
     for (int y = 0; y < (YRES + 1) / 2; ++y)
         for (int x = 0; x < XRES; ++x)
             for (int c = 0; c < 4; ++c) {
