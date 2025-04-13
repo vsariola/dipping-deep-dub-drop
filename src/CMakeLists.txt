@@ -124,7 +124,7 @@ endif()
 
 if (NOT COMPRESS_LEVEL STREQUAL OFF)
     message(STATUS "Crinkler found at: ${CRINKLER}")      
-    set(CRINKLER_FLAGS "/ENTRY:entrypoint /RANGE:opengl32 /PROGRESSGUI /UNSAFEIMPORT /UNALIGNCODE /HASHSIZE:100 /REPORT:crinkler_report.html /EXPORT:NvOptimusEnablement=1")
+    set(CRINKLER_FLAGS "/ENTRY:entrypoint /RANGE:opengl32 /PROGRESSGUI /UNSAFEIMPORT /UNALIGNCODE /HASHSIZE:100 /REPORT:crinkler_report.html /EXPORT:NvOptimusEnablement=1 /EXPORT:AmdPowerXpressRequestHighPerformance=1")
     # TBD: do we add /SATURATE
     if (COMPRESS_LEVEL STREQUAL LIGHT) 
         set(CRINKLER_FLAGS "${CRINKLER_FLAGS} /HASHTRIES:100 /COMPMODE:INSTANT /ORDERTRIES:2000")
