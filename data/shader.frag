@@ -74,47 +74,53 @@ vec2 frac(vec3 p, float ring) {
     if (ring >= 107) {
         d.y *= 1-texture(textSampler,(u+CENTER)*vec2(1,1.8)+.5+vec2(-.17,.05)).r;
     }
-    d.x = -d.x/zoom*(syncs[HEIGHT]+syncs[BLLL]/3);
+    d.x = d.x/zoom*(syncs[HEIGHT]+syncs[BLLL]/3)-p.z;
     return d;
 }
 
 vec2 map(vec3 p) {           
     float r = -log(length(p))+syncs[ZOOM];    
     float ring = floor(r);    
-    vec2 d = mix(frac(p,ring),frac(p,ring+1),mod(r,1.));    
-    return vec2(-p.z-d.x,d.y);
+    return mix(frac(p,ring),frac(p,ring+1),mod(r,1.));        
 }
+
+float hash(vec2 p)
+{
+	return fract(sin(dot(p*1e3, vec2(12.9898, 78.233))) * 43758.5453);   
+}
+
 
 // ----------------------------
 // CLAP
 // ----------------------------  
 
 void main() {    
-    vec2 iResolution = vec2(@XRES@,@YRES@);
-    vec2 u = (2*gl_FragCoord.xy-iResolution)/iResolution.y;            
-    u.x += fract(sin(sin(u.y)*1000.)*4521.)*syncs[DUBCHORD]/3.;
-    vec3 d = normalize(vec3(u,1.4));    
+    vec2 res = vec2(@XRES@,@YRES@);
+    vec2 uv = (2*gl_FragCoord.xy-res)/res.y;
+    uv.x += hash(uv.yy)*syncs[DUBCHORD]/3.;
+    vec3 d = normalize(vec3(uv,1.4));
+    vec3 col = vec3(0);        
+
+    float td = 0,dist;    
         
-    if (syncs[ROW]<0) { // negative time indicates we should do post-processing       	        
-        vec3 acc=vec3(0);
-        vec2 uv = gl_FragCoord.xy/iResolution;
+    if (syncs[ROW]<0) { // negative time indicates we should do post-processing       	                                                
+        uv = gl_FragCoord.xy/res;
         vec2 angle=vec2(0,texture(postSampler,uv).w*syncs[DOF_BLUR]*.001);
-        float rad=1.;
+        float rad=1.;                
 	    for (int j=0;j<80;j++)
         {  
             rad += 1./rad;
 	        angle*=R(2.4);                
-		    acc +=texture(postSampler,uv+(rad-1.)*angle).xyz;                
+		    col +=texture(postSampler,uv+(rad-1.)*angle).xyz;                
 	    }        
-        outcolor = vec4(pow(acc/80.,vec3(.45)),1);
+        col = pow(col/80.,vec3(.45)); // gamma correction
         
     } else {
 
     // ----------------------------
     // CLIP
     // ----------------------------       
-    
-    float td,dist;    
+        
     vec3 p = vec3(0,0,-2);    
     d.xz *= R(syncs[CAM_XZ]);
     p.xz *= R(syncs[CAM_XZ]);
@@ -122,24 +128,27 @@ void main() {
     p.yz *= R(syncs[CAM_YZ]);   
     d.xy *= R(syncs[CAM_XY]);
     p.xy *= R(syncs[CAM_XY]);   
-    
    
     for (int i=0;i<99;i++)
        if (td+=dist=map(p).x*.6,p+=d*dist,abs(dist)<MINDIST)
             break; 
     
-    
     vec2 m = map(p);
     vec3 n = normalize(m.x-vec3(map(p-N.xyy).x,map(p-N.yxy).x,map(p-N.yyx).x)); 
-    vec3 col = .5+.5*sin(m.y*(syncs[COLOR_MULT])+vec3(syncs[COLOR_R],syncs[COLOR_G],syncs[COLOR_B]));
-    col = mix(col, vec3(0.0), isnan(col));
-    col *= max(dot(LIGHTDIR,n),0.)+syncs[SNARE]/2.;
-    col *= syncs[COLOR_FADE];
-    col *= exp(-td/syncs[FOG]);
+    col = .5+.5*sin(m.y*(syncs[COLOR_MULT])+vec3(syncs[COLOR_R],syncs[COLOR_G],syncs[COLOR_B]));
+    col = atan(  
+        mix(col, vec3(0), isnan(col)) // there was some nans from fractals, so avoid white pixels
+        * (max(dot(LIGHTDIR,n),0.)+syncs[SNARE]/2.) // lighting
+        * exp(-td/syncs[FOG]) // fog
+        * syncs[COLOR_FADE] // fade    
+    ); // atan tonemapping
     // ----------------------------
     // CLAP
-    // ----------------------------                   
-    outcolor = vec4(atan(col),abs(syncs[DOF_DEPTH]-td)/4.);        
+    // ----------------------------                        
     }
-    outcolor.xyz -= (fract(43757.3*sin(dot(gl_FragCoord.xy, vec2(13.,78.)))))/256;
+    // dithering
+    outcolor = vec4(
+        col - hash(uv)/256, // some dithering, purposely towards 0 to increase blacks
+        abs(syncs[DOF_DEPTH]-td)/4.  // distance from focus saved in alpha for DOF
+    );    
 }
