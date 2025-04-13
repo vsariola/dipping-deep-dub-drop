@@ -76,7 +76,7 @@ add_custom_command(
 
 # intro
 
-add_executable(intro WIN32 "minirocket.asm" ${SONG_ASM} ${SHADERS} "minirocket.h" "minirocket.inc" minirocket_tracknames.h bitmap.h bitmap.cpp)
+add_executable(intro WIN32 main.cpp sync.cpp sync.h minirocket.asm ${SONG_ASM} ${SHADERS} minirocket.h minirocket.inc minirocket_tracknames.h bitmap.h bitmap.cpp)
 set_source_files_properties(minirocket.asm OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/minirocket.inc)
 set_property(TARGET intro APPEND PROPERTY LINK_FLAGS " /ENTRY:entrypoint")                      
 target_compile_definitions(intro PUBLIC XRES=${XRES} YRES=${YRES})
@@ -104,18 +104,13 @@ if (SYNC)
     message("Defining SYNC macro")
     add_compile_definitions(SYNC)
     set(COMPRESS_LEVEL OFF)
-    set(CAPTURE OFF)
-    target_sources(intro PUBLIC "sync.cpp")
+    set(CAPTURE OFF)    
 endif()
 if (CAPTURE)    
     set(exesuffix "${exesuffix}-capture")
     message("Defining CAPTURE macro")
     add_compile_definitions(CAPTURE)
     set(COMPRESS_LEVEL OFF)
-    target_sources(intro PUBLIC "capture.cpp")
-endif()
-if(NOT CAPTURE AND NOT SYNC)
-    target_sources(intro PUBLIC "main.cpp")
 endif()
 
 set_property(TARGET intro APPEND PROPERTY COMPILE_FLAGS " /Os /O1 /Ob1 /Oi /Oy /GS- /arch:IA32 /fp:fast")

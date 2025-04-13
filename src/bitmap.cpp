@@ -1,6 +1,25 @@
 #include "bitmap.h"
+#include <song.h>
 
 #define ERRORBOX2(x) {MessageBoxA(hwnd,"there was a bad when " x,"bad",MB_OK); ExitProcess(-1);}
+
+static long int frame_counter = 0;
+
+long SaveFrame(HDC hDC, HWND window) {
+    static unsigned char framepixels[XRES * YRES * 4];
+    for (int y = 0; y < (YRES + 1) / 2; ++y)
+        for (int x = 0; x < XRES; ++x)
+            for (int c = 0; c < 4; ++c) {
+                auto b = framepixels[(x + y * XRES) * 4 + c]; framepixels[(x + y * XRES) * 4 + c] = framepixels[(x + (YRES - 1 - y) * XRES) * 4 + c]; framepixels[(x + (YRES - 1 - y) * XRES) * 4 + c] = b;
+            }
+    HBITMAP bitmap = CreateBitmap(XRES, YRES, 1, 32, framepixels);
+    PBITMAPINFO bitmapinfo = CreateBitmapInfoStruct(window, bitmap);
+    char filename[1024];
+    wsprintf(filename, "frames\\frame%06d.bmp", frame_counter);
+    CreateBMPFile(window, filename, bitmapinfo, bitmap, hDC);
+    DeleteObject(bitmap);
+    return (frame_counter++ * SU_SAMPLE_RATE) / CAPTURE_FRAME_RATE * 2 * sizeof(SUsample);
+}
 
 PBITMAPINFO CreateBitmapInfoStruct(HWND hwnd, HBITMAP hBmp)
 {
