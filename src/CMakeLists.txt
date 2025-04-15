@@ -25,7 +25,7 @@ endif()
 set(ARCH "386") # force 32-bit output, even on 64-bit Windows
 set(SONG_ASM song.asm)
 set(SONG_YML ../data/song.yml)
-set(SOINTU_CMD ${GO} run "github.com/vsariola/sointu/cmd/sointu-compile@v0.3.0")
+set(SOINTU_CMD ${GO} run "github.com/vsariola/sointu/cmd/sointu-compile@v0.4.0")
 add_custom_command(
     OUTPUT ${SONG_ASM} 
     COMMAND ${SOINTU_CMD} -arch=${ARCH} -o ${CMAKE_CURRENT_BINARY_DIR}/${SONG_ASM} ${CMAKE_CURRENT_SOURCE_DIR}/${SONG_YML}
@@ -144,7 +144,7 @@ else()
 endif()
 
 add_custom_command(TARGET intro POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:intro> ${PROJECT_SOURCE_DIR}/dist/fractal-intro${exesuffix}.exe
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:intro> ${PROJECT_SOURCE_DIR}/dist/dipping-deep-dub-drop${exesuffix}.exe
 )
 
 if (VALIDATE_SHADERS)

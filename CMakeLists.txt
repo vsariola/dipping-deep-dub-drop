@@ -4,9 +4,9 @@ cmake_policy(SET CMP0091 NEW)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-project(fractal-intro
+project(dipping-deep-dub-drop
     VERSION 0.0.0
-    DESCRIPTION "a 4k intro about fractals"
+    DESCRIPTION "a 4k intro about fractals and dub music"
     LANGUAGES C CXX)
 
 # Only do these if this is the main project, and not if it is included through add_subdirectory
