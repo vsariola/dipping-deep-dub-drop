@@ -80,6 +80,16 @@ fractal is not.
 
 ## What was learned this time
 
+- Be careful with /HASHSIZE:1000 in Crinkler! And always make a Crinkled debug
+  version that checks every Windows function returns correct HRESULT (e.g.
+  S_OK), e.g. by MessageBoxing the expected & got value and exiting. We had a
+  case of DirectSoundCreate already failing due to out-of-memory error in the
+  Crinkled version, but only on Gargaj's machine. Not checking the value causes
+  several hours of wasted time. The fix was to use smaller hash (e.g.
+  /HASHSIZE:100), which was not issue at all becuase we were not even close to
+  being out of bytes. Interestingly, the rest of the intro takes only ~ 300 megs
+  of memory, so in theory, /HASHSIZE:1000 should not be too big, even with the ~
+  2-4 gig limits of 32-bit modes. But there still was an issue.
 - How to make DOF (I know, this is pretty basic): there's two passes, with the
   first writing color and depth info in alpha channel (actually, the amount of
   blur needed). Then in the second pass it does the blur.
