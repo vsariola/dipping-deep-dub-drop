@@ -68,15 +68,22 @@ would not be impossible, but would still be actually challenging to make it this
 fast & fit it all in 4k. Rather, we cheat.
 
 In 2D, we calculate the "ring" a point is on by computing floor(log(length(p))).
-Each ring is then actually the exact  same julia or some other fractal, but just
-slightly rotated. In this log space, it is easy to zoom with addition with
+Each ring is then actually the exact same julia or some other fractal, but just
+slightly rotated. In this log space, it is easy to use addition to zoom, with
 something like floor(log(length(p))+zoom). Now, to hide that it's just actually
 repeating rings of the same fractal, we linearly blend from current ring to the
 next.
 
-In the very beginning of the intro, you see that there is something wrong with
-the julia fractal: julia fractal is supposed to be point symmetric but the
-fractal is not.
+To hide the ring trick a bit more, we *clamp* the ring to a range: in our,
+between 0 and 107. The clamping does so that after ring 107, it is just an
+ordinary julia, and also before ring 0 it looks mostly like a normal julia. The
+camera also starts zooming around ring 0 and ends around ring 107. So, if you
+study the fractal when the camera is not moving, it looks mostly like a normal
+julia.
+
+But in the beginning of the intro, if you look more closely, you will start
+noticing that there is something wrong with the fractal: julia is supposed to be
+perfectly point symmetric but our fractal is not.
 
 ## What was learned this time
 
